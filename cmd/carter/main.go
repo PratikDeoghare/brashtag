@@ -66,11 +66,10 @@ func main() {
 		panic(err)
 	}
 
-	for _, kid := range tree.Kids() {
-		switch kid.(type) {
+	for _, kid := range tree.(bt.Bag).Kids() {
+		switch x := kid.(type) {
 		case bt.Bag:
-			fmt.Println(kid)
-			cards = append(cards, makeCard(kid))
+			cards = append(cards, makeCard(x))
 		}
 	}
 
@@ -79,7 +78,7 @@ func main() {
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
 
-func makeCard(t bt.Tree) Card {
+func makeCard(t bt.Bag) Card {
 	var front []string
 	for _, kid := range t.Kids() {
 		switch x := kid.(type) {
@@ -88,7 +87,7 @@ func makeCard(t bt.Tree) Card {
 		case bt.Code:
 			front = append(front, code(x))
 		case bt.Bag:
-			t = kid
+			t = x
 		}
 	}
 

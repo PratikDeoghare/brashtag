@@ -28,7 +28,7 @@ func main() {
 	fmt.Println(toHTML(tree))
 }
 
-func toHTML(tree bt.Tree) string {
+func toHTML(tree bt.Node) string {
 	switch x := tree.(type) {
 	case bt.Blob:
 		return x.Text()

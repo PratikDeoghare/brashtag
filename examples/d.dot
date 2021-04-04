@@ -1,0 +1,51 @@
+digraph {
+	graph [ rankdir = "LR" ];
+	n1 [
+	shape = "record"
+	style = "rounded,filled"
+	fillcolor = "pink"
+	label = "bag| {}"
+];
+n2 [
+	shape = "record"
+	style = "rounded,filled"
+	fillcolor = "lightyellow"
+	label = "blob | {Hello, World!~\l~\l}"
+];
+n3 [
+	shape = "record"
+	style = "rounded,filled"
+	fillcolor = "pink"
+	label = "bag| {comment}"
+];
+n4 [
+	shape = "record"
+	style = "rounded,filled"
+	fillcolor = "lightyellow"
+	label = "blob | {~\l  _ A first program!~\l}"
+];
+n5 [
+	shape = "record"
+	style = "rounded,filled"
+	fillcolor = "lightyellow"
+	label = "blob | {~\l~\lCode to compute nth fibonacci number.~\l~\l}"
+];
+n6 [
+	shape = "record"
+	style = "rounded,filled"
+	fillcolor = "lightblue"
+	label = "code | {$ | ~\ldef fibs(n):~\l  _ if n == 0 or n == 1:~\l  _  _  return 1~\l  _ return fibs(n-1) + fibs(n-2)~\l}"
+];
+n7 [
+	shape = "record"
+	style = "rounded,filled"
+	fillcolor = "lightyellow"
+	label = "blob | {~\l~\lThat is all.~\l~\l}"
+];
+n1 -> n2
+n3 -> n4
+n1 -> n3
+n1 -> n5
+n1 -> n6
+n1 -> n7
+}

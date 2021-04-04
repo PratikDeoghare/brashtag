@@ -1,3 +1,5 @@
+// Package brashtag provides parser for parsing
+// files written in brashtag notation.
 package brashtag
 
 import (
@@ -5,20 +7,49 @@ import (
 	"strings"
 )
 
-type Tree interface {
-	isTree()
-	String() string
-	Kids() []Tree
+type Node interface {
+	fmt.Stringer
+	isNode()
 }
 
-type Bag struct {
-	kids []Tree
+type bag struct {
 	tag  string
+	kids []Node
 }
 
-func (Bag) isTree() {}
+// Bag has a tag and children.
+type Bag struct {
+	*bag
+}
 
-func (b Bag) Kids() []Tree {
+var _ Node = Bag{}
+
+func (Bag) isNode() {}
+
+func NewBag(tag string, kids ...Node) Bag {
+	return Bag{
+		&bag{
+			tag:  tag,
+			kids: kids,
+		},
+	}
+}
+
+func (b Bag) AddKids(kids ...Node) {
+	b.kids = append(b.kids, kids...)
+}
+
+func (b Bag) RemoveKid(i int) {
+	if i < len(b.kids) {
+		b.kids = append(b.kids[:i], b.kids[i+1:]...)
+	}
+}
+
+func (b Bag) SetTag(tag string) {
+	b.tag = tag
+}
+
+func (b Bag) Kids() []Node {
 	return b.kids
 }
 
@@ -36,15 +67,34 @@ func (b Bag) String() string {
 	return fmt.Sprintf("#%s{%s}", b.tag, strings.Join(text, ""))
 }
 
-type Code struct {
+type code struct {
 	tag  string
 	text string
 }
 
-func (Code) isTree() {}
+type Code struct {
+	*code
+}
 
-func (Code) Kids() []Tree {
-	return nil
+var _ Node = Code{}
+
+func (Code) isNode() {}
+
+func NewCode(tag, text string) Code {
+	return Code{
+		&code{
+			tag:  tag,
+			text: text,
+		},
+	}
+}
+
+func (c Code) SetTag(tag string) {
+	c.tag = tag
+}
+
+func (c Code) SetText(text string) {
+	c.text = text
 }
 
 func (c Code) Text() string {
@@ -59,14 +109,26 @@ func (c Code) String() string {
 	return fmt.Sprintf("%s%s%s", c.tag, c.text, c.tag)
 }
 
-type Blob struct {
+type blob struct {
 	text string
 }
 
-func (Blob) isTree() {}
+type Blob struct {
+	*blob
+}
 
-func (Blob) Kids() []Tree {
-	return nil
+var _ Node = Blob{}
+
+func (Blob) isNode() {}
+
+func NewBlob(text string) Blob {
+	return Blob{
+		&blob{text: text},
+	}
+}
+
+func (b Blob) SetText(text string) {
+	b.text = text
 }
 
 func (b Blob) Text() string {
@@ -74,10 +136,12 @@ func (b Blob) Text() string {
 }
 
 func (b Blob) String() string {
-	return b.text
+	return fmt.Sprint(b.text)
 }
 
-func Parse(text string) (Tree, error) {
+// Parse parses the text and returns its brashtag tree.
+// It always puts everything in a bag at the root.
+func Parse(text string) (Node, error) {
 	text = fmt.Sprintf("#{%s}", text)
 	root, rem, err := parseBag([]byte(text))
 	if len(rem) != 0 {
@@ -90,16 +154,8 @@ func Parse(text string) (Tree, error) {
 	return root, nil
 }
 
-func MustParse(text string) Tree {
-	t, err := Parse(text)
-	if err != nil {
-		panic(err)
-	}
-	return t
-}
-
-func parseBag(text []byte) (Tree, []byte, error) {
-	root := Bag{}
+func parseBag(text []byte) (Node, []byte, error) {
+	root := NewBag("")
 
 	c := 0
 	for c < len(text) {
@@ -110,10 +166,10 @@ func parseBag(text []byte) (Tree, []byte, error) {
 		}
 	}
 
-	root.tag = string(text[1:c])
+	root.SetTag(string(text[1:c]))
 	text = text[c+1:]
 
-	var k Tree
+	var k Node
 	var err error
 
 	for len(text) > 0 {
@@ -123,14 +179,14 @@ func parseBag(text []byte) (Tree, []byte, error) {
 			if err != nil {
 				return nil, text, err
 			}
-			root.kids = append(root.kids, k)
+			root.AddKids(k)
 
 		case text[0] == '$':
 			k, text, err = parseCode(text)
 			if err != nil {
 				return nil, text, err
 			}
-			root.kids = append(root.kids, k)
+			root.AddKids(k)
 
 		case text[0] == '}':
 			return root, text[1:], nil
@@ -140,15 +196,15 @@ func parseBag(text []byte) (Tree, []byte, error) {
 			if err != nil {
 				return nil, text, err
 			}
-			root.kids = append(root.kids, k)
+			root.AddKids(k)
 		}
 	}
 
 	return nil, text, fmt.Errorf("bag not closed")
 }
 
-func parseCode(text []byte) (Tree, []byte, error) {
-	root := Code{}
+func parseCode(text []byte) (Node, []byte, error) {
+	root := NewCode("", "")
 	c := 0
 	for c < len(text) {
 		if text[c] == '$' {
@@ -157,13 +213,13 @@ func parseCode(text []byte) (Tree, []byte, error) {
 			break
 		}
 	}
-	root.tag = string(text[0:c])
+	root.SetTag(string(text[0:c]))
 	j := c
 	for j < len(text)-c {
 		if string(text[j:j+c]) != root.tag {
 			j++
 		} else {
-			root.text = string(text[c:j])
+			root.SetText(string(text[c:j]))
 			return root, text[j+c:], nil
 		}
 	}
@@ -171,8 +227,8 @@ func parseCode(text []byte) (Tree, []byte, error) {
 	return nil, text, fmt.Errorf("code not closed")
 }
 
-func parseBlob(text []byte) (Tree, []byte, error) {
-	root := Blob{}
+func parseBlob(text []byte) (Node, []byte, error) {
+	root := NewBlob("")
 	j := 0
 
 loop:
@@ -184,7 +240,7 @@ loop:
 			j++
 		}
 	}
-	root.text = string(text[:j])
+	root.SetText(string(text[:j]))
 
 	return root, text[j:], nil
 }

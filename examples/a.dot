@@ -1,0 +1,16 @@
+digraph {
+	graph [ rankdir = "LR" ];
+	n1 [
+	shape = "record"
+	style = "rounded,filled"
+	fillcolor = "pink"
+	label = "bag| {}"
+];
+n2 [
+	shape = "record"
+	style = "rounded,filled"
+	fillcolor = "lightyellow"
+	label = "blob | {Hello, World!~\l}"
+];
+n1 -> n2
+}

@@ -40,7 +40,10 @@
     This is front of the card.
     #{
         This is back of the card.
-        $#log{...}$  below contains history of study of this card.
+    }
+
+    #{
+        Log below contains history of study of this card.
     }
 
 }
