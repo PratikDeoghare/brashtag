@@ -33,7 +33,7 @@ put text with those characters in the tree you have to surround it by ``` ` ``` 
 a node of kind code. You need to surround the code node with more ticks than maximum
 number of consecutive ticks inside its text. 
 
-Following snippet constructs a code node with tag `'` and `func main() { fmt.Println("Hello") }` text.
+Following snippet constructs a code node with tag ``` ` ``` and `func main() { fmt.Println("Hello") }` text.
 
 ```
 `
@@ -41,12 +41,11 @@ func main() { fmt.Println("Hello") }
 `
 ```
 
-And this snippet constructs a code node with tag ```
-``
-``` and text `PATH=$PATH:/foo/bar` .
+And this snippet constructs a code node with tag ``` `` 
+``` and text ``` Some `code` here.``` .
 ```
 ``
-PATH=$PATH:/foo/bar
+Some `code` here.
 ``
 ```
 
@@ -116,9 +115,9 @@ That is all.
 These are quickly hacked together, unpolished programs. 
 Making this kind of hacking easy is what this notation is invented for. 
 
-- [barkdown](/cmd/barkdown) - converts brashtag to html. 
-- [carter](/cmd/carter) - flashcards study program. 
-- [tree](/cmd/todot) - outputs brashtag tree in dot format from a brashtag document.
+- [barkdown](https://github.com/pratikdeoghare/barkdown-apps/cmd/barkdown) - converts brashtag to html. 
+- [carter](https://github.com/pratikdeoghare/barkdown-apps/cmd/carter) - flashcards study program. 
+- [tree](https://github.com/pratikdeoghare/barkdown-apps/cmd/todot) - outputs brashtag tree in dot format from a brashtag document.
 
 
 #### TODO
