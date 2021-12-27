@@ -115,9 +115,9 @@ That is all.
 These are quickly hacked together, unpolished programs. 
 Making this kind of hacking easy is what this notation is invented for. 
 
-- [barkdown](https://github.com/pratikdeoghare/barkdown-apps/cmd/barkdown) - converts brashtag to html. 
-- [carter](https://github.com/pratikdeoghare/barkdown-apps/cmd/carter) - flashcards study program. 
-- [tree](https://github.com/pratikdeoghare/barkdown-apps/cmd/todot) - outputs brashtag tree in dot format from a brashtag document.
+- [barkdown](https://github.com/PratikDeoghare/brashtag-apps/tree/master/cmdcmd/barkdown) - converts brashtag to html. 
+- [carter](https://github.com/PratikDeoghare/brashtag-apps/tree/master/cmdcmd/carter) - flashcards study program. 
+- [tree](https://github.com/PratikDeoghare/brashtag-apps/tree/master/cmdcmd/todot) - outputs brashtag tree in dot format from a brashtag document.
 
 
 #### TODO
