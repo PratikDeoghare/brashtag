@@ -26,25 +26,27 @@ with text `"This is front."`. The bag tagged `back` contains a blob with text
 }
 ``` 
 
-Any text is allowed inside tags and blobs except these four characters `#`, `{`, `}`, `$`. 
+Any text is allowed inside tags and blobs except these four characters `#`, `{`, `}`, 
+``` ` ``` (tick). 
 Because these characters are also used by the notation. If you want to 
-put text with those characters in the tree you have to surround it by `$`. That creates 
-a node of kind code. You need to surround the code node with more `$` signs than maximum
-number of consecutive `$` inside its text. 
+put text with those characters in the tree you have to surround it by ``` ` ``` ticks. That creates 
+a node of kind code. You need to surround the code node with more ticks than maximum
+number of consecutive ticks inside its text. 
 
-Following snippet constructs a code node with tag `$` and `func main() { fmt.Println("Hello") }` text.
+Following snippet constructs a code node with tag ``` ` ``` and `func main() { fmt.Println("Hello") }` text.
 
 ```
-$
+`
 func main() { fmt.Println("Hello") }
-$
+`
 ```
 
-And this snippet constructs a code node with tag `$$` and `PATH=$PATH:/foo/bar` text.
+And this snippet constructs a code node with tag ``` `` 
+``` and text ``` Some `code` here.``` .
 ```
-$$
-PATH=$PATH:/foo/bar
-$$
+``
+Some `code` here.
+``
 ```
 
 #### Examples Texts and Corresponding Trees 
@@ -77,12 +79,12 @@ Hello, World!
 
 Code to compute nth fibonacci number.
 
-$
+`
 def fibs(n):
     if n == 0 or n == 1:
         return 1
     return fibs(n-1) + fibs(n-2)
-$
+`
 ```
 ![](./examples/c.png)
 
@@ -96,12 +98,12 @@ Hello, World!
 
 Code to compute nth fibonacci number.
 
-$
+`
 def fibs(n):
     if n == 0 or n == 1:
         return 1
     return fibs(n-1) + fibs(n-2)
-$
+`
 
 That is all.
 ```
@@ -113,9 +115,9 @@ That is all.
 These are quickly hacked together, unpolished programs. 
 Making this kind of hacking easy is what this notation is invented for. 
 
-- [barkdown](/cmd/barkdown) - converts brashtag to html. 
-- [carter](/cmd/carter) - flashcards study program. 
-- [tree](/cmd/todot) - outputs brashtag tree in dot format from a brashtag document.
+- [barkdown](https://github.com/PratikDeoghare/brashtag-apps/tree/master/cmd/barkdown) - converts brashtag to html. 
+- [carter](https://github.com/PratikDeoghare/brashtag-apps/tree/master/cmd/carter) - flashcards study program. 
+- [todot](https://github.com/PratikDeoghare/brashtag-apps/tree/master/cmd/todot) - outputs brashtag tree in dot format from a brashtag document.
 
 
 #### TODO

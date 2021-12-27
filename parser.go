@@ -181,7 +181,7 @@ func parseBag(text []byte) (Node, []byte, error) {
 			}
 			root.AddKids(k)
 
-		case text[0] == '$':
+		case text[0] == '`':
 			k, text, err = parseCode(text)
 			if err != nil {
 				return nil, text, err
@@ -207,7 +207,7 @@ func parseCode(text []byte) (Node, []byte, error) {
 	root := NewCode("", "")
 	c := 0
 	for c < len(text) {
-		if text[c] == '$' {
+		if text[c] == '`' {
 			c++
 		} else {
 			break
@@ -234,7 +234,7 @@ func parseBlob(text []byte) (Node, []byte, error) {
 loop:
 	for j < len(text) {
 		switch text[j] {
-		case '$', '#', '}':
+		case '`', '#', '}':
 			break loop
 		default:
 			j++

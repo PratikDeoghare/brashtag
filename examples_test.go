@@ -2,18 +2,30 @@ package brashtag
 
 import (
 	"fmt"
+	"strings"
 )
 
 func ExampleParse() {
-	text := `
-#div{
-	#b{A very short story}
-	#p{Lorem and impsum met for a coffee.}
-	$ print 'Hello' $
-}
-	`
+	
+	text := strings.Join([]string{
+		"#div{",
+		"	#b{A very short story}",
+		"	#p{Lorem and impsum met for a coffee.}",
+		"	` print 'Hello' `",
+		"}",
+	}, "\n")
+	
 	tree, _ := Parse(text)
 	fmt.Println(toHTML(tree))
+	
+	// Input:
+/*
+	#div{
+		#b{A very short story}
+		#p{Lorem and impsum met for a coffee.}
+		` print 'Hello' `
+	}
+*/
 
 	// Output:
 	//<div>
