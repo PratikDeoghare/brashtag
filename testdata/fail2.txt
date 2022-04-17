@@ -1,0 +1,14 @@
+
+#ml{
+
+	(3) The minimum width required  is `max{d_x + 1, d_y` where `d_x` is
+	dimension of input and `d_y` the dimension of the output [2].
+}
+
+	#ref{
+		[2] something
+	}
+
+	here
+}
+
