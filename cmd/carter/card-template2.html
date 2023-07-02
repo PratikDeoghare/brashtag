@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        .card {
+            width: 80%;
+            padding: 20px;
+        }
+
+        .front {
+            padding: 20px;
+        }
+
+        .back {
+            border-top: 1px dotted black;
+            padding: 20px;
+            display: none;
+        }
+        body{
+            background: #ffffe4;
+        }
+    </style>
+    <script>
+        showBack = () => {
+            document.getElementsByClassName('back')[0].style.display = 'block';
+        }
+    </script>
+    <script type="text/x-mathjax-config">
+  MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
+    </script>
+
+    <script type="text/javascript" async
+            src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-MML-AM_CHTML">
+    </script>
+</head>
+<body>
+<div class="card">
+    <a href="/good">Good</a>
+    <a href="/bad">Bad</a>
+    <a onclick="showBack()" href="#">Show</a>
+
+    <div class="front" onclick="showBack()">
+        {{.Front}}
+    </div>
+    <div class="back">
+        {{.Back}}
+    </div>
+
+</div>
+</body>
+</html>

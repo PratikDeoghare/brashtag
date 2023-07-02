@@ -1,0 +1,62 @@
+#{
+   What is `$\sum_{i=1}^{n} i$` ?
+   #{
+      `$\frac{n (n + 1)}{2}$`
+   }
+#score{0}}
+
+#{
+    What is Euclid's algorithm to calculate `gcd`?
+
+    #{
+        The granddaddy of all the algorithms.
+
+        ``
+        def gcd(a, b):
+            while a > 0 and b > 0:
+                if a > b:
+                    a = a % b
+                else:
+                    b = b % a
+            return a if a != 0 else b
+        ``
+
+        <img src="https://upload.wikimedia.org/wikipedia/commons/3/37/Euclid%27s_algorithm_Book_VII_Proposition_2_3.png"/>
+    }
+
+#score{1}}
+
+#{
+    What is full form or HTTP?
+
+    #{
+        <b>H</b>yper<b>T</b>ext <b>T</b>ransfer <b>P</b>rotocol
+    }
+#score{-1}}
+
+
+#{
+    Where was बाहुबली from?
+    #{
+        माहिष्मती. Jay माहिष्मती!
+    }
+#score{-2}}
+
+#{
+    This is front of the card.
+    #{
+        This is back of the card.
+    }
+
+    #{
+        Log below contains history of study of this card.
+    }
+
+#score{0}}
+
+#{
+    What subgraphs are forbidden in planer graphs?
+    #{
+        $K_5$ and `$K_{3,3}$`
+    }
+#score{4}}
