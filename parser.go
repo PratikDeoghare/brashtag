@@ -59,11 +59,11 @@ func (b Bag) Tag() string {
 
 func (b Bag) String() string {
 	var text []string
-	
+
 	for _, kid := range b.Kids() {
 		text = append(text, kid.String())
 	}
-	
+
 	return fmt.Sprintf("#%s{%s}", b.tag, strings.Join(text, ""))
 }
 
@@ -142,7 +142,6 @@ func (b Blob) String() string {
 // Parse parses the text and returns its brashtag tree.
 // It always puts everything in a bag at the root.
 func Parse(text string) (Node, error) {
-	text = fmt.Sprintf("#{%s}", text)
 	root, rem, err := parseBag([]byte(text))
 	if len(rem) != 0 {
 		n := 100
@@ -160,22 +159,28 @@ func Parse(text string) (Node, error) {
 
 func parseBag(text []byte) (Node, []byte, error) {
 	root := NewBag("")
-	
+
 	c := 0
+	bagOpen := false
 	for c < len(text) {
 		if text[c] != '{' {
 			c++
 		} else {
+			bagOpen = true
 			break
 		}
 	}
-	
+
+	if !bagOpen && c == len(text) {
+		return nil, text, fmt.Errorf("unopened bag missing { after #")
+	}
+
 	root.SetTag(string(text[1:c]))
 	text = text[c+1:]
-	
+
 	var k Node
 	var err error
-	
+
 	for len(text) > 0 {
 		switch {
 		case text[0] == '#':
@@ -184,17 +189,17 @@ func parseBag(text []byte) (Node, []byte, error) {
 				return nil, text, err
 			}
 			root.AddKids(k)
-		
+
 		case text[0] == '`':
 			k, text, err = parseCode(text)
 			if err != nil {
 				return nil, text, err
 			}
 			root.AddKids(k)
-		
+
 		case text[0] == '}':
 			return root, text[1:], nil
-		
+
 		default:
 			k, text, err = parseBlob(text)
 			if err != nil {
@@ -203,7 +208,7 @@ func parseBag(text []byte) (Node, []byte, error) {
 			root.AddKids(k)
 		}
 	}
-	
+
 	return nil, text, fmt.Errorf("bag not closed")
 }
 
@@ -227,7 +232,7 @@ func parseCode(text []byte) (Node, []byte, error) {
 			return root, text[j+c:], nil
 		}
 	}
-	
+
 	return nil, text, fmt.Errorf("code not closed")
 }
 
@@ -247,7 +252,7 @@ loop:
 		}
 	}
 	root.SetText(string(text[:j]))
-	
+
 	return root, text[j:], nil
 }
 
