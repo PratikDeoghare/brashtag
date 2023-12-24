@@ -9,7 +9,7 @@ import (
 
 func TestParser(t *testing.T) {
 	r := bt.NewBag("hello")
-	a := bt.NewCode("$$", "echo $PATH")
+	a := bt.NewCode("``", "echo $PATH")
 	b := bt.NewBlob("some text")
 	r.AddKids(a, b)
 
@@ -18,9 +18,7 @@ func TestParser(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	v := r2.(bt.Bag).Kids()[0]
-
-	if v.String() != r.String() {
+	if r2.String() != r.String() {
 		t.Fail()
 	}
 }

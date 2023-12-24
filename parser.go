@@ -140,7 +140,6 @@ func (b Blob) String() string {
 }
 
 // Parse parses the text and returns its brashtag tree.
-// It always puts everything in a bag at the root.
 func Parse(text string) (Node, error) {
 	root, rem, err := parseBag([]byte(text))
 	if len(rem) != 0 {
