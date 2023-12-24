@@ -36,8 +36,3 @@ func TestUnexpectedL(t *testing.T) {
 	}
 	t.Log(err)
 }
-
-func TestFail2(t *testing.T) {
-	// TODO
-	t.Fail()
-}
