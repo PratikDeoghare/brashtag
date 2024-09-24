@@ -6,7 +6,7 @@ import (
 )
 
 func ExampleParse() {
-	
+
 	text := strings.Join([]string{
 		"#div{",
 		"	#b{A very short story}",
@@ -14,18 +14,18 @@ func ExampleParse() {
 		"	` print 'Hello' `",
 		"}",
 	}, "\n")
-	
+
 	tree, _ := Parse(text)
 	fmt.Println(toHTML(tree))
-	
+
 	// Input:
-/*
-	#div{
-		#b{A very short story}
-		#p{Lorem and impsum met for a coffee.}
-		` print 'Hello' `
-	}
-*/
+	/*
+		#div{
+			#b{A very short story}
+			#p{Lorem and impsum met for a coffee.}
+			` print 'Hello' `
+		}
+	*/
 
 	// Output:
 	//<div>

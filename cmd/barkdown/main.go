@@ -4,16 +4,14 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"regexp"
 	"strings"
-	
+
 	bt "github.com/pratikdeoghare/brashtag"
 )
 
 func main() {
 	text := ""
-
-	_ = ""
-	
 	scanner := bufio.NewScanner(os.Stdin)
 	for scanner.Scan() {
 		text += scanner.Text() + "\n"
@@ -22,26 +20,30 @@ func main() {
 		panic(err)
 	}
 
-	tree, err := bt.Parse(text)
+	tree, err := bt.Parse(fmt.Sprintf("#{%s}", strings.TrimSpace(text)))
 	if err != nil {
 		panic(err)
 	}
 
-	fmt.Println(toHTML(tree))
+	fmt.Println(toHTML(tree, ""))
 }
 
-func toHTML(tree bt.Node) string {
+func toHTML(tree bt.Node, parent string) string {
 	switch x := tree.(type) {
 	case bt.Blob:
 		return x.Text()
 
 	case bt.Code:
-		return "<pre>" + x.Text() + "</pre>"
+		if x.Tag() == "`" {
+			return fmt.Sprintf("<code>%s</code>", x.Text())
+		}
+		s := "<pre>" + insertLinks(x.Text()) + "</pre>"
+		return fmt.Sprintf(`<div id="%s" class="code3"><code>[%s]</code>%s</div>`, parent, parent, s)
 
 	case bt.Bag:
 		html := ""
 		for _, kid := range x.Kids() {
-			html += toHTML(kid)
+			html += toHTML(kid, x.Tag())
 		}
 
 		switch x.Tag() {
@@ -75,4 +77,10 @@ func toHTML(tree bt.Node) string {
 	}
 
 	return ""
+}
+
+var re = regexp.MustCompile(`<<<(.*)>>>`)
+
+func insertLinks(s string) string {
+	return re.ReplaceAllString(s, `<a href="#$1">[$1]</a>`)
 }

@@ -1,0 +1,46 @@
+#{
+    
+    I am writing a classic program to print "Hello, world!" now.
+
+    In golang you have to include the `fmt` package to do the
+    printing.
+    
+    #imports{
+    	```
+    	    <<<copyright notice>>>
+    	    import (
+    	    	   "fmt"
+    		   <<<import other packages>>>
+    	    )
+    	```
+    }
+    
+    #import other packages{
+    	```
+    	   _ "strings"
+    	   _ "github.com/pratikdeoghare/brashtag"
+    	```
+    }
+    
+    Then we just write the main code.
+    
+    #main.go{
+    	```
+    	    package main
+    	    <<<imports>>>
+    	    func main() {
+    	        fmt.Println("Hello, world!")
+    		
+    	    }
+    	```
+    }
+    
+    That is all. This program should print it.
+    
+    #copyright notice{
+    	```
+    	    // This is copyright of me in year 3005.
+    	```
+    }
+    
+}

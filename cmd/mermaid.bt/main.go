@@ -20,6 +20,7 @@ func main() {
 		panic(err)
 	}
 
+	text = fmt.Sprintf("#{%s}", text)
 	tree, err := bt.Parse(text)
 	if err != nil {
 		panic(err)
