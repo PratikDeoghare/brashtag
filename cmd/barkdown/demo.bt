@@ -1,5 +1,4 @@
 
-
 #title{Title}
 
 #subtitle{Subtitle}
@@ -12,11 +11,12 @@
    }
 
    Code for fibonacci function in python is here.
-   `
+   ```
         def fibs(n):
             if n == 0 or n == 1:
                 return 1
             return fibs(n-1) + fibs(n-2)
-   `
+   ```
 
 }
+

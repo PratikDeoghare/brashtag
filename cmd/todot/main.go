@@ -20,6 +20,7 @@ func main() {
 		panic(err)
 	}
 
+	text = fmt.Sprintf("#{%s}", text)
 	tree, err := bt.Parse(text)
 	if err != nil {
 		panic(err)
@@ -50,7 +51,7 @@ const code = `n%d [
 	shape = "record"
 	style = "rounded,filled"
 	fillcolor = "lightblue"
-	label = "code | {%s | %s}"
+	label = "code | { %s | %s}"
 ];`
 
 const blob = `n%d [
@@ -94,6 +95,8 @@ func toDot(tree bt.Node, g *graph) int {
 }
 
 func ws(x string) string {
+	x = strings.ReplaceAll(x, "{", `\{`)
+	x = strings.ReplaceAll(x, "}", `\}`)
 	x = strings.ReplaceAll(x, "   ", "  _")
 	x = strings.ReplaceAll(x, "\n", "~\\l")
 	return html.EscapeString(x)

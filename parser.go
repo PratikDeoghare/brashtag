@@ -142,6 +142,7 @@ func (b Blob) String() string {
 // Parse parses the text and returns its brashtag tree.
 func Parse(text string) (Node, error) {
 	root, rem, err := parseBag([]byte(text))
+
 	if len(rem) != 0 {
 		n := 100
 		if len(rem) < 100 {
