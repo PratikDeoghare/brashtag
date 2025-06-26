@@ -125,6 +125,10 @@ func toHTML(tree bt.Node, parent string) string {
 
 		case "subtitle":
 			html = "<h3>" + html + "</h3>"
+		default:
+			if x.Tag() != "" {
+				html = fmt.Sprintf("<%s>%s</%s>", x.Tag(), html, x.Tag())
+			}
 		}
 
 		return html
