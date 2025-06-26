@@ -10,6 +10,55 @@ import (
 	bt "github.com/pratikdeoghare/brashtag"
 )
 
+const doc = `
+	<html>
+	<head>
+
+			<style>
+		    body
+    {
+        width:80%;
+        margin-left:auto;
+        margin-right:auto;
+    }
+
+		    .highlight {
+				  animation: highlightFade 2s ease-out;
+				}
+
+				@keyframes highlightFade {
+				  0% {
+				    background-color: pink;
+				  }
+				  100% {
+				    background-color: transparent;
+				  }
+				}
+			</style> 
+
+
+			<script>
+			  document.addEventListener('DOMContentLoaded', () => {
+			    document.querySelectorAll('a[href^="#"]').forEach(link => {
+			      link.addEventListener('click', function (e) {
+			        const id = this.getAttribute('href').substring(1);
+			        const target = document.getElementById(id);
+			        if (target) {
+			          // Reset scroll behavior if needed
+			          target.classList.remove('highlight');
+			          void target.offsetWidth; // Force reflow
+			          target.classList.add('highlight');
+			        }
+			      });
+			    });
+			  });
+			</script>
+
+
+	</head>
+	<body>
+`
+
 func main() {
 	text := ""
 	scanner := bufio.NewScanner(os.Stdin)
@@ -25,7 +74,12 @@ func main() {
 		panic(err)
 	}
 
-	fmt.Println(toHTML(tree, ""))
+	fmt.Println(doc + toHTML(tree, "") + `
+	</body>
+	</html>
+`)
+
+	fmt.Println()
 }
 
 func toHTML(tree bt.Node, parent string) string {
