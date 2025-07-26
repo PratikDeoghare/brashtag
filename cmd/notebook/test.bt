@@ -1,0 +1,257 @@
+#{
+   #{ 
+        ```
+        import os
+        os.environ["PYTHONUNBUFFERED"] = "1"
+        11111 + 11111
+        ```
+
+        #out{
+        `````````````        
+        22222
+        `````````````}
+    }
+
+    #{ 
+        ```
+        print("Hello world!")
+        print("Hello world!")
+        ```
+
+        #out{
+        ````````````````````        
+        Hello world!
+        Hello world!
+        
+        ````````````````````}
+    }
+
+    #{ 
+        ```
+        def foo(x):
+            return x * x
+        ```
+
+        #out{
+        ````````        
+        
+        ````````}
+    }
+
+    #{
+        ```
+        [foo(x) for x in range(10)]
+        ```
+
+        #out{
+        ````````````````````````````````````````````        
+        [0, 1, 4, 9, 16, 25, 36, 49, 64, 81]
+        ````````````````````````````````````````````}
+    }
+
+    #{
+        ```
+        foo(12122)
+        ```
+
+        #out{
+        `````````````````        
+        146942884
+        `````````````````}
+    }
+
+    #{
+        ```
+        foo(2121221)
+        ```
+
+        #out{
+        `````````````````````        
+        4499578530841
+        `````````````````````}
+    }
+
+
+    #{
+        ```
+        i = 0
+        i++
+        ```
+
+        #out{
+        ```````````````````````````````````        
+        [  Cell In[7], line 2
+            i++
+               ^
+        SyntaxError: invalid syntax
+        ]
+        ```````````````````````````````````}
+    }
+
+    #cube{
+        ```
+        def cube(x):
+            return x * x * x
+        ```
+    }
+
+
+    #{
+        ```
+        1233 * 121232
+        ```
+
+        #out{
+        `````````````````        
+        149479056
+        `````````````````}
+    }
+
+    #cube list{
+
+        We want to compute pairs of cubes of consecutive integers. 
+        For that we call `cube` function from `bar` function which
+        pairs them up.
+
+	    `https://google.com`
+
+        <img src="/tmp/mermaid-xxxxxx.png3190846151" />
+
+        #bar{
+            ```
+            <<<cube>>>
+            def bar(x):
+                return cube(x), cube(x + 1), cube(x + 15) 
+            ```
+        }
+        
+
+        ```
+        <<<bar>>>
+        [bar(x) for x in range(10)]
+        ```
+
+	#out{
+        ````````````````````````````        
+        [(0, 1, 3375),
+         (1, 8, 4096),
+         (8, 27, 4913),
+         (27, 64, 5832),
+         (64, 125, 6859),
+         (125, 216, 8000),
+         (216, 343, 9261),
+         (343, 512, 10648),
+         (512, 729, 12167),
+         (729, 1000, 13824)]
+        ````````````````````````````}
+
+        #out1{
+        ```````````````````````````        
+        [(0, 1, 125),
+         (1, 8, 216),
+         (8, 27, 343),
+         (27, 64, 512),
+         (64, 125, 729),
+         (125, 216, 1000),
+         (216, 343, 1331),
+         (343, 512, 1728),
+         (512, 729, 2197),
+         (729, 1000, 2744)]
+        ```````````````````````````}
+    }
+
+    #{
+        ````
+        import time 
+        for i in range(10):
+            print(i)
+            #time.sleep(1)
+        ````
+
+        #out{
+        `````````        
+        0
+        1
+        2
+        3
+        4
+        5
+        6
+        7
+        8
+        9
+        
+        `````````}
+    }
+
+    
+    ```
+    !pip install torch
+    import torch 
+
+    torch.cuda.is_available()
+    ```
+
+    #out{
+    ````````````````````````````````````````````````````````````````````````````````    
+    Requirement already satisfied: torch in ./.tryenv/lib/python3.11/site-packages (2.7.1)
+    Requirement already satisfied: filelock in ./.tryenv/lib/python3.11/site-packages (from torch) (3.18.0)
+    Requirement already satisfied: typing-extensions>=4.10.0 in ./.tryenv/lib/python3.11/site-packages (from torch) (4.14.1)
+    Requirement already satisfied: sympy>=1.13.3 in ./.tryenv/lib/python3.11/site-packages (from torch) (1.14.0)
+    Requirement already satisfied: networkx in ./.tryenv/lib/python3.11/site-packages (from torch) (3.5)
+    Requirement already satisfied: jinja2 in ./.tryenv/lib/python3.11/site-packages (from torch) (3.1.6)
+    Requirement already satisfied: fsspec in ./.tryenv/lib/python3.11/site-packages (from torch) (2025.7.0)
+    Requirement already satisfied: nvidia-cuda-nvrtc-cu12==12.6.77 in ./.tryenv/lib/python3.11/site-packages (from torch) (12.6.77)
+    Requirement already satisfied: nvidia-cuda-runtime-cu12==12.6.77 in ./.tryenv/lib/python3.11/site-packages (from torch) (12.6.77)
+    Requirement already satisfied: nvidia-cuda-cupti-cu12==12.6.80 in ./.tryenv/lib/python3.11/site-packages (from torch) (12.6.80)
+    Requirement already satisfied: nvidia-cudnn-cu12==9.5.1.17 in ./.tryenv/lib/python3.11/site-packages (from torch) (9.5.1.17)
+    Requirement already satisfied: nvidia-cublas-cu12==12.6.4.1 in ./.tryenv/lib/python3.11/site-packages (from torch) (12.6.4.1)
+    Requirement already satisfied: nvidia-cufft-cu12==11.3.0.4 in ./.tryenv/lib/python3.11/site-packages (from torch) (11.3.0.4)
+    Requirement already satisfied: nvidia-curand-cu12==10.3.7.77 in ./.tryenv/lib/python3.11/site-packages (from torch) (10.3.7.77)
+    Requirement already satisfied: nvidia-cusolver-cu12==11.7.1.2 in ./.tryenv/lib/python3.11/site-packages (from torch) (11.7.1.2)
+    Requirement already satisfied: nvidia-cusparse-cu12==12.5.4.2 in ./.tryenv/lib/python3.11/site-packages (from torch) (12.5.4.2)
+    Requirement already satisfied: nvidia-cusparselt-cu12==0.6.3 in ./.tryenv/lib/python3.11/site-packages (from torch) (0.6.3)
+    Requirement already satisfied: nvidia-nccl-cu12==2.26.2 in ./.tryenv/lib/python3.11/site-packages (from torch) (2.26.2)
+    Requirement already satisfied: nvidia-nvtx-cu12==12.6.77 in ./.tryenv/lib/python3.11/site-packages (from torch) (12.6.77)
+    Requirement already satisfied: nvidia-nvjitlink-cu12==12.6.85 in ./.tryenv/lib/python3.11/site-packages (from torch) (12.6.85)
+    Requirement already satisfied: nvidia-cufile-cu12==1.11.1.6 in ./.tryenv/lib/python3.11/site-packages (from torch) (1.11.1.6)
+    Requirement already satisfied: triton==3.3.1 in ./.tryenv/lib/python3.11/site-packages (from torch) (3.3.1)
+    Requirement already satisfied: setuptools>=40.8.0 in ./.tryenv/lib/python3.11/site-packages (from triton==3.3.1->torch) (65.5.0)
+    Requirement already satisfied: mpmath<1.4,>=1.1.0 in ./.tryenv/lib/python3.11/site-packages (from sympy>=1.13.3->torch) (1.3.0)
+    Requirement already satisfied: MarkupSafe>=2.0 in ./.tryenv/lib/python3.11/site-packages (from jinja2->torch) (3.0.2)
+    True
+    ````````````````````````````````````````````````````````````````````````````````}
+
+    ```
+    x = 3 * torch.randn(4, 4) 
+    5 * x
+    ```
+    
+    #out{
+    ``````````````````````````````````````````````````````````    
+    tensor([[ 14.7035,   4.3862, -14.5943, -13.4935],
+            [  8.0520,  -4.1819,   9.7435, -17.5732],
+            [  5.9872, -12.9836,  12.8767,   1.1864],
+            [ 31.4242,   7.8837, -14.4808, -11.3299]])
+    ``````````````````````````````````````````````````````````}
+
+    `
+            print(2 ** 120)
+    ` 
+
+    #out{
+            `````````````````````````````````````````````            
+            1329227995784915872903807060280344576
+            
+            `````````````````````````````````````````````}
+
+    ```
+        !pip install --upgrade pip
+    ```
+
+    #out{
+        ````````````````````````````````````````````````````````````````````````````````        
+        Requirement already satisfied: pip in ./.tryenv/lib/python3.11/site-packages (25.1.1)
+        
+        ````````````````````````````````````````````````````````````````````````````````}
+}
