@@ -118,6 +118,7 @@ Making this kind of hacking easy is what this notation is invented for.
 - [barkdown](https://github.com/PratikDeoghare/brashtag-apps/tree/master/cmd/barkdown) - converts brashtag to html. 
 - [carter](https://github.com/PratikDeoghare/brashtag-apps/tree/master/cmd/carter) - flashcards study program. 
 - [todot](https://github.com/PratikDeoghare/brashtag-apps/tree/master/cmd/todot) - outputs brashtag tree in dot format from a brashtag document.
+- [notebook](https://github.com/PratikDeoghare/brashtag/tree/master/cmd/notebook) - use a brashtag document as a jupyter notebook
 
 
 #### TODO
