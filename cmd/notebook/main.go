@@ -35,6 +35,20 @@ func main() {
 	respCh := make(chan []byte, 100)
 
 	go func() {
+
+		http.HandleFunc("/my-endpoint", func(w http.ResponseWriter, r *http.Request) {
+
+			err := processFile(*filename, ws, respCh)
+			if err != nil {
+				slog.Error("error processing file", err)
+			}
+		})
+		log.Println("Server started at port 8000")
+		log.Fatal(http.ListenAndServe(":8000", nil))
+
+	}()
+
+	go func() {
 		for {
 
 			ws.SetReadDeadline(time.Now().Add(5 * time.Second))
