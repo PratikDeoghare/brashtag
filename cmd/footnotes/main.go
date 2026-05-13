@@ -8,7 +8,7 @@ import (
 
 func main() {
 
-	text := `There are only two families of _proper arbitrary_ markup languages: [TeX](https://tug.org/) and #footnote:sgml-link{[SGML](https://en.wikipedia.org/wiki/Standard_Generalized_Markup_Language)}. By _arbitrary_, I mean the grammar specifically, and how it can be used to _mark_ arbitrary plain text with information. And by _proper_, I mean the ability to have standalone nodes, user-definable nodes, nodes with attributes, and the wrapping of plain text. Everything else either lacks one of the these capabilities, or is a derivative or syntactic makeover of TeX or SGML.
+	text := `There are only two families of _proper arbitrary_ markup languages: [TeX](https://tug.org/) and #footnote:sgml-link{[SGML](https://en.wikipedia.org/wiki/Standard_Generalized_Markup_Language)}. By _arbitrary_, I mean the grammar specifically, and how it can be used to _mark_ arbitrary plain text with information. And by _proper_, I mean the ability to have standalone nodes, user-definable nodes, nodes with attributes, and the wrapping of plain text. Everything else either lacks one of the these capabilities, or is a derivative or syntactic makeover of TeX or SGML. #youtube{YvnTsiIFXeI}
 
 		#footnote-content:sgml-link{ I would normally link to official thing as reference but it's behind the "wonderful" ISO paywall: [ISO 8879:1986](https://www.iso.org/standard/16387.html). }`
 
@@ -43,6 +43,11 @@ func toHtml(r bt.Node, footnotes map[string]bt.Node) string {
 		s := ""
 		if strings.HasPrefix(x.Tag(), "footnote-content") {
 			return ""
+		}
+		if strings.HasPrefix(x.Tag(), "youtube") {
+			return fmt.Sprintf(
+				`<div class="youtube"> <iframe src="https://youtu.be/%s" /> </div>`,
+				getText(x))
 		}
 		if strings.HasPrefix(x.Tag(), "footnote:") {
 			f := footnotes[strings.TrimPrefix(x.Tag(), "footnote:")]
