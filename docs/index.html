@@ -1,2 +1,738 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
-<H1> Test123 </H1>
+<title>Brashtag Playground (Monaco)</title>
+
+<style>
+html, body {
+  margin: 0;
+  height: 100%;
+  overflow: hidden;
+}
+
+.container {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+}
+
+.panel {
+  width: 25%;
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid #ddd;
+}
+
+.header {
+  padding: 8px;
+  background: #f5f5f5;
+  border-bottom: 1px solid #ddd;
+  font-family: sans-serif;
+  font-size: 13px;
+}
+
+.editor {
+  flex: 1;
+}
+
+#ast {
+  flex: 1;
+  margin: 0;
+  padding: 10px;
+  overflow: auto;
+  background: #fafafa;
+  font-family: monospace;
+  font-size: 12px;
+}
+
+iframe {
+  flex: 1;
+  border: none;
+}
+</style>
+
+<script src="https://unpkg.com/dagre@0.8.5/dist/dagre.min.js"></script>
+<script src="https://unpkg.com/cytoscape-dagre@2.5.0/cytoscape-dagre.js"></script>
+
+<script src="https://unpkg.com/cytoscape@3.28.1/dist/cytoscape.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.52.2/min/vs/loader.js"></script>
+</head>
+
+<body>
+
+<div class="container">
+
+  <div class="panel">
+    <div class="header">Brashtag</div>
+    <div id="input" class="editor"></div>
+  </div>
+
+  <div class="panel" zindex="-1">
+    <div class="header">Tree</div>
+    <pre id="ast"></pre>
+  </div>
+
+  <div class="panel">
+    <div class="header">Graph</div>
+    <div id="graph" style="flex:1;"></div>
+  </div>
+
+
+  <div class="panel">
+    <div class="header">Renderer</div>
+    <div id="renderer" class="editor"></div>
+  </div>
+
+  <div class="panel">
+    <div class="header">Preview</div>
+    <iframe id="preview"></iframe>
+  </div>
+
+</div>
+
+<script>
+/* =========================
+   BRASHTAG PARSER (same as before, simplified)
+========================= */
+
+class Bag {
+  constructor(tag, kids = []) {
+    this.tag = tag;
+    this.kids = kids;
+  }
+
+  addKids(...kids) {
+    this.kids.push(...kids);
+  }
+
+  setTag(tag) {
+    this.tag = tag;
+  }
+
+  string() {
+    return `#${this.tag}{${this.kids.map(k => k.string()).join("")}}`;
+  }
+}
+
+class Code {
+  constructor(tag, text) {
+    this.tag = tag;
+    this.text = text;
+  }
+
+  setTag(tag) {
+    this.tag = tag;
+  }
+
+  setText(text) {
+    this.text = text;
+  }
+
+  string() {
+    return `${this.tag}${this.text}${this.tag}`;
+  }
+}
+
+class Blob {
+  constructor(text) {
+    this.text = text;
+  }
+
+  setText(text) {
+    this.text = text;
+  }
+
+  string() {
+    return this.text;
+  }
+}
+
+function parse(text) {
+
+  const result = parseBag(text);
+
+  if (result.error) {
+    throw new Error(result.error);
+  }
+
+  if (result.rest.length !== 0) {
+    throw new Error(
+      "unexpected trailing input: " +
+      result.rest.slice(0, 100)
+    );
+  }
+
+  return result.node;
+}
+
+function parseBag(text) {
+
+  const root = new Bag("");
+
+  let c = 0;
+  let bagOpen = false;
+
+  while (c < text.length) {
+
+    if (text[c] !== "{") {
+      c++;
+    } else {
+      bagOpen = true;
+      break;
+    }
+  }
+
+  if (!bagOpen) {
+    return {
+      error: "unopened bag missing { after #",
+      rest: text
+    };
+  }
+
+  root.setTag(text.slice(1, c));
+
+  text = text.slice(c + 1);
+
+  while (text.length > 0) {
+
+    if (text[0] === "#") {
+
+      const result = parseBag(text);
+
+      if (result.error) return result;
+
+      root.addKids(result.node);
+
+      text = result.rest;
+
+      continue;
+    }
+
+    if (text[0] === "`") {
+
+      const result = parseCode(text);
+
+      if (result.error) return result;
+
+      root.addKids(result.node);
+
+      text = result.rest;
+
+      continue;
+    }
+
+    if (text[0] === "}") {
+
+      return {
+        node: root,
+        rest: text.slice(1)
+      };
+    }
+
+    const result = parseBlob(text);
+
+    if (result.error) return result;
+
+    root.addKids(result.node);
+
+    text = result.rest;
+  }
+
+  return {
+    error: "bag not closed",
+    rest: text
+  };
+}
+
+function parseCode(text) {
+
+  const root = new Code("", "");
+
+  let c = 0;
+
+  while (c < text.length && text[c] === "`") {
+    c++;
+  }
+
+  root.setTag(text.slice(0, c));
+
+  let j = c;
+
+  while (j < text.length - c + 1) {
+
+    if (text.slice(j, j + c) !== root.tag) {
+      j++;
+    } else {
+
+      root.setText(text.slice(c, j));
+
+      return {
+        node: root,
+        rest: text.slice(j + c)
+      };
+    }
+  }
+
+  return {
+    error: "code not closed",
+    rest: text
+  };
+}
+
+function parseBlob(text) {
+
+  const root = new Blob("");
+
+  let j = 0;
+
+  while (j < text.length) {
+
+    switch (text[j]) {
+
+      case "`":
+      case "#":
+      case "}":
+
+        root.setText(text.slice(0, j));
+
+        return {
+          node: root,
+          rest: text.slice(j)
+        };
+
+      case "{":
+
+        return {
+          error: "unexpected {"
+        };
+
+      default:
+        j++;
+    }
+  }
+
+  root.setText(text.slice(0, j));
+
+  return {
+    node: root,
+    rest: text.slice(j)
+  };
+}
+
+/* =========================
+   HTML RENDERER (editable)
+========================= */
+
+const defaultRenderer = `
+function nodeToHtml(node) {
+
+  if (node instanceof Blob) {
+    return node.text;
+  }
+
+  if (node instanceof Code) {
+    return "<pre>" + node.text + "</pre>";
+  }
+
+  if (node instanceof Bag) {
+    let s = "";
+    for (const k of node.kids) {
+      s += nodeToHtml(k);
+    }
+    if (!node.tag) return s;
+    return "<" + node.tag + ">" + s + "</" + node.tag + ">";
+  }
+
+  return "";
+}
+`.trim();
+
+/* =========================
+   MONACO SETUP
+========================= */
+
+let inputEditor, rendererEditor;
+
+require.config({
+  paths: {
+    vs: "https://cdn.jsdelivr.net/npm/monaco-editor@0.52.2/min/vs"
+  }
+});
+
+require(["vs/editor/editor.main"], function () {
+
+
+  /* INPUT (custom DSL syntax highlighting placeholder) */
+  inputEditor = monaco.editor.create(document.getElementById("input"), {
+    value:
+`#{
+  This is some text. This is #b{bold}.
+\`\`
+def foo():
+  print("Hello")
+\`\`
+
+}`,
+    language: "brashtag",
+    theme: "vs-dark",
+    automaticLayout: true
+  });
+
+  /* RENDERER */
+  rendererEditor = monaco.editor.create(document.getElementById("renderer"), {
+    value: defaultRenderer,
+    language: "javascript",
+    theme: "vs-dark",
+    automaticLayout: true
+  });
+
+  inputEditor.onDidChangeModelContent(render);
+  rendererEditor.onDidChangeModelContent(render);
+
+  render();
+
+    monaco.languages.register({ id: "brashtag" });
+
+monaco.languages.setMonarchTokensProvider("brashtag", {
+  tokenizer: {
+    root: [
+
+      [/#[a-zA-Z0-9_-]+/, "keyword.tag"],
+
+      [/{|}/, "delimiter.bracket"],
+
+      [/`+/, "string.code"],
+
+      [/[^#`{}]+/, "text"],
+    ]
+  }
+});
+});
+
+
+
+
+/* =========================
+   HTML CONVERSION
+========================= */
+
+function compileRenderer() {
+  const code = rendererEditor.getValue();
+
+  return new Function(
+    "Bag",
+    "Code",
+    "Blob",
+    code + "; return nodeToHtml;"
+  )(Bag, Code, Blob);
+}
+
+function toHtml(text) {
+  const tree = parse(text);
+  const fn = compileRenderer();
+  return fn(tree);
+}
+
+/* =========================
+   AST
+========================= */
+
+function serialize(n) {
+  if (n instanceof Bag) {
+    return { type: "Bag", tag: n.tag, kids: n.kids.map(serialize) };
+  }
+  if (n instanceof Code) {
+    return { type: "Code", tag: n.tag, text: n.text };
+  }
+  if (n instanceof Blob) {
+    return { type: "Blob", text: n.text };
+  }
+}
+
+/* =========================
+   RENDER LOOP
+========================= */
+
+const ast = document.getElementById("ast");
+
+const preview = document.getElementById("preview");
+
+function render() {
+  if (!inputEditor || !rendererEditor) return;
+
+  try {
+    const text = inputEditor.getValue();
+    const tree = parse(text);
+
+    ast.textContent = JSON.stringify(serialize(tree), null, 2);
+
+
+    renderGraph();
+
+    const html = toHtml(text);
+
+    preview.srcdoc = `
+<html>
+<body style="font-family:sans-serif;padding:20px;">
+${html}
+</body>
+</html>
+`;
+  } catch (e) {
+    ast.textContent = "ERROR:\n\n" + e.message;
+  }
+}
+function toCyGraph(ast) {
+
+  const elements = [];
+  let id = 0;
+
+  function walk(node, parent = null) {
+
+    const myId = String(id++);
+
+    let label = "";
+    let type = "";
+
+    if (node instanceof Bag) {
+      label = "#" + showWhitespace(node.tag);
+      type = "bag";
+    }
+
+    else if (node instanceof Code) {
+      label = showWhitespace(node.text);
+      type = "code";
+    }
+
+    else if (node instanceof Blob) {
+      label = showWhitespace(node.text) ;
+      type = "blob";
+    }
+
+    elements.push({
+      data: {
+        id: myId,
+        label,
+        type
+      }
+    });
+
+    if (parent !== null) {
+
+      elements.push({
+        data: {
+          id: parent + "-" + myId,
+          source: parent,
+          target: myId
+        }
+      });
+    }
+
+    if (node instanceof Bag) {
+      for (const k of node.kids) {
+        walk(k, myId);
+      }
+    }
+  }
+
+  walk(ast);
+
+  return elements;
+}
+
+let cyInstance = null;
+
+function showWhitespace(s) {
+  return s
+    .replaceAll(" ", "␣")
+    .replaceAll("\t", "⇥\t")
+    .replaceAll("\n", "↵\n");
+}
+
+function escapeHtml(str) {
+
+  return str
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;");
+}
+
+
+function renderGraph() {
+    if (!inputEditor || !rendererEditor) return;
+
+
+  console.log("HERE");
+  const container = document.getElementById("graph");
+
+  const ast = parse(inputEditor.getValue());
+  const elements = toCyGraph(ast);
+
+  if (cyInstance) {
+    cyInstance.destroy();
+  }
+
+
+cytoscape.use(cytoscapeDagre);
+
+
+cyInstance = cytoscape({
+  container,
+
+  elements,
+
+  layout: {
+    name: "dagre",
+    rankDir: "LR",   // LEFT → RIGHT
+    nodeSep: 40,
+    rankSep: 80
+  },
+
+style: [
+
+  {
+  selector: "node",
+  style: {
+
+    label: "data(label)",
+
+    shape: "round-rectangle",
+
+    width: "label",
+    height: 40,
+
+    padding: "12px",
+
+
+
+
+    "text-wrap": "wrap",
+    "text-max-width": "120px",
+
+    "font-size": "12px",
+    "font-family": "monospace",
+
+    color: "#fff",
+
+    "background-color": "#4FC1FF",
+
+    "border-width": 1,
+    "border-color": "#1E88E5"
+  }
+},
+
+{
+  selector: 'node[type="bag"]',
+  style: {
+
+    shape: "round-rectangle",
+
+    label: "data(label)",
+
+    "background-color": "pink",
+
+    color: "#111",
+
+    "font-family": "monospace",
+    "font-size": "11px",
+
+    width: "label",
+    height: "label",
+
+    padding: "12px",
+
+    "text-wrap": "wrap",
+    "text-max-width": "240px",
+
+        "text-valign": "center",
+    "text-halign": "center",
+
+
+    "border-width": 1,
+    "border-color": "#888"
+  }
+},
+
+
+
+{
+  selector: 'node[type="code"]',
+  style: {
+
+    shape: "round-rectangle",
+
+    label: "data(label)",
+
+    "background-color": "lightblue",
+
+    color: "#111",
+
+    "font-family": "monospace",
+    "font-size": "11px",
+
+
+    width: "label",
+    height: "label",
+
+    padding: "12px",
+
+    "text-wrap": "wrap",
+    "text-max-width": "300px",
+
+    "text-justification": "left",
+    "text-halign": "center",
+    "text-valign": "center",
+
+
+    "border-width": 1,
+    "border-color": "#888"
+  }
+},
+
+{
+  selector: 'node[type="blob"]',
+  style: {
+
+    shape: "round-rectangle",
+
+    label: "data(label)",
+
+    "background-color": "lightyellow",
+
+    color: "#111",
+
+    "font-family": "monospace",
+    "font-size": "11px",
+
+    width: "label",
+    height: "label",
+
+    padding: "12px",
+
+    "text-wrap": "wrap",
+    "text-max-width": "240px",
+
+    "text-justification": "left",
+    "text-halign": "center",
+    "text-valign": "center",
+
+    "border-width": 1,
+    "border-color": "#888"
+  }
+}
+]
+});
+
+
+}
+</script>
+
+
+
+</body>
+</html>
+
