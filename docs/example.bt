@@ -1,0 +1,90 @@
+#{
+	#-README{
+		LOOK HERE!
+
+		Notice the abasense of this text
+		in the preview panel.
+
+		Edit this and watch the Tree, Graph
+		and Preview change.
+
+		Read the comments in the renderer panel
+		to activate and deactivate various features.
+
+		They are marked with `// F:`.
+
+		The skeleton is just this code.
+		Rest of it is features.
+
+		```
+		function WALK(node) {
+			if (node instanceof Blob) {
+				return ...;
+			}
+
+			if (node instanceof Code) {
+				return ...;
+			}
+
+			if (node instanceof Bag) {
+				...
+				for (const k of node.kids) {
+					... = WALK(k);
+				}
+				...
+			}
+		}
+		```
+	}
+
+	Here is #b{bold}, #i{itallic}, #u{underline}.
+
+	Here is some inline code `let x = 233;`.
+
+	Multiline code snippet:
+	```
+	def foo():
+		return bar()
+	```.
+
+	#-README{
+		Headers already work.
+		Can you figure out why?
+	}
+
+	Some headers.
+
+	#h1{Header 1}
+	#h2{Header 2}
+	#h3{Header 3}
+	#h4{Header 4}
+	#h5{Header 5}
+	#h6{Header 6}
+
+
+	#-README{
+		So you want markdown style lists?
+		Fix the `makeList` function.
+	}
+
+	Look there is a list here.
+
+	#ol{
+		- one
+		- two
+		- three
+			- four
+			- five
+		- six
+	}
+
+
+	#-README{
+		How can I add table?
+	}
+
+	#table{
+		n    & 0 & 1 & 2 & 3 & 4 & 5
+		f(n) & 1 & 2 & 4 & 8 & 16 & 32
+	}
+}

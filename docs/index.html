@@ -71,12 +71,10 @@ iframe {
     <div id="input" class="editor"></div>
   </div>
 
-  <div class="panel" zindex="-1">
-    <div class="header">Tree</div>
-    <pre id="ast"></pre>
-  </div>
 
   <div class="panel">
+  	    <div class="header">Tree</div>
+    <pre id="ast"></pre>
     <div class="header">Graph</div>
     <div id="graph" style="flex:1;"></div>
   </div>
@@ -323,33 +321,7 @@ function parseBlob(text) {
   };
 }
 
-/* =========================
-   HTML RENDERER (editable)
-========================= */
 
-const defaultRenderer = `
-function nodeToHtml(node) {
-
-  if (node instanceof Blob) {
-    return node.text;
-  }
-
-  if (node instanceof Code) {
-    return "<pre>" + node.text + "</pre>";
-  }
-
-  if (node instanceof Bag) {
-    let s = "";
-    for (const k of node.kids) {
-      s += nodeToHtml(k);
-    }
-    if (!node.tag) return s;
-    return "<" + node.tag + ">" + s + "</" + node.tag + ">";
-  }
-
-  return "";
-}
-`.trim();
 
 /* =========================
    MONACO SETUP
@@ -363,28 +335,23 @@ require.config({
   }
 });
 
-require(["vs/editor/editor.main"], function () {
+require(["vs/editor/editor.main"], async function () {
 
-
+	const response = await fetch('./example.bt');
+	const text = await response.text();
   /* INPUT (custom DSL syntax highlighting placeholder) */
   inputEditor = monaco.editor.create(document.getElementById("input"), {
-    value:
-`#{
-  This is some text. This is #b{bold}.
-\`\`
-def foo():
-  print("Hello")
-\`\`
-
-}`,
+    value:text,
     language: "brashtag",
     theme: "vs-dark",
     automaticLayout: true
   });
 
+	const response1 = await fetch('./defaultRenderer.js');
+	const text1 = await response1.text();
   /* RENDERER */
   rendererEditor = monaco.editor.create(document.getElementById("renderer"), {
-    value: defaultRenderer,
+    value: text1.trim(),
     language: "javascript",
     theme: "vs-dark",
     automaticLayout: true
@@ -566,7 +533,6 @@ function renderGraph() {
     if (!inputEditor || !rendererEditor) return;
 
 
-  console.log("HERE");
   const container = document.getElementById("graph");
 
   const ast = parse(inputEditor.getValue());
