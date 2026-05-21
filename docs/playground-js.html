@@ -1,12 +1,17 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Brashtag Programming Language</title>
-  <style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
+<title>Brashtag Playground (Monaco)</title>
 
+<style>
+html, body {
+  margin: 0;
+  height: 100%;
+  overflow: hidden;
+}
 
 .container {
   display: flex;
@@ -15,7 +20,7 @@
 }
 
 .panel {
-  width: 50%;
+  width: 25%;
   display: flex;
   flex-direction: column;
   border-right: 1px solid #ddd;
@@ -47,116 +52,17 @@ iframe {
   flex: 1;
   border: none;
 }
+</style>
 
-
-
-  /*----*/
-    body {
-
-
-      font-family: Arial, sans-serif;
-      color: #111;
-      background: #fff;
-    }
-    header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 20px 30px;
-      border-bottom: 1px solid #e5e5e5;
-    }
-    .logo {
-      font-size: 24px;
-      font-weight: bold;
-    }
-    nav a {
-      margin-left: 20px;
-      text-decoration: none;
-      color: #111;
-      font-size: 14px;
-    }
-    nav a:hover {
-      text-decoration: underline;
-    }
-    .hero {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      padding: 80px 20px;
-    }
-    .hero h1 {
-      font-size: 42px;
-      margin-bottom: 20px;
-    }
-    .hero p {
-      max-width: 600px;
-      color: #555;
-      font-size: 18px;
-      margin-bottom: 30px;
-    }
-    .buttons a {
-      display: inline-block;
-      margin: 0 10px;
-      padding: 12px 20px;
-      border-radius: 10px;
-      text-decoration: none;
-      font-size: 14px;
-    }
-    .primary {
-      background: #111;
-      color: #fff;
-    }
-    .secondary {
-      border: 1px solid #ccc;
-      color: #111;
-    }
-    .features {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 20px;
-      padding: 40px 30px;
-      border-top: 1px solid #e5e5e5;
-    }
-    .feature h3 {
-      margin-bottom: 10px;
-    }
-    .feature p {
-      color: #555;
-      font-size: 14px;
-    }
-    footer {
-      border-top: 1px solid #e5e5e5;
-      text-align: center;
-      padding: 20px;
-      font-size: 12px;
-      color: #777;
-    }
-  </style>
-  <script src="https://unpkg.com/dagre@0.8.5/dist/dagre.min.js"></script>
+<script src="https://unpkg.com/dagre@0.8.5/dist/dagre.min.js"></script>
 <script src="https://unpkg.com/cytoscape-dagre@2.5.0/cytoscape-dagre.js"></script>
 
 <script src="https://unpkg.com/cytoscape@3.28.1/dist/cytoscape.min.js"></script>
 
 <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.52.2/min/vs/loader.js"></script>
-
-
 </head>
+
 <body>
-
-
-<section class="hero">
-  <h1>Brashtag</h1>
-  <p> Write trees!
-  </p>
-  <div class="buttons">
-    <a class="primary" href="/playground-js.html">Open Playground</a>
-   <!-- <a class="primary" href="/tours">Start Tours</a> -->
-
-  </div>
-</section>
-
 
 <div class="container">
 
@@ -167,13 +73,24 @@ iframe {
 
 
   <div class="panel">
-    <div class="header">Tree</div>
+  	    <div class="header">Tree</div>
+    <pre id="ast"></pre>
+    <div class="header">Graph</div>
     <div id="graph" style="flex:1;"></div>
   </div>
 
 
-</div>
+  <div class="panel">
+    <div class="header">Renderer</div>
+    <div id="renderer" class="editor"></div>
+  </div>
 
+  <div class="panel">
+    <div class="header">Preview</div>
+    <iframe id="preview"></iframe>
+  </div>
+
+</div>
 
 <script>
 /* =========================
@@ -420,7 +337,7 @@ require.config({
 
 require(["vs/editor/editor.main"], async function () {
 
-	const response = await fetch('./example2.bt');
+	const response = await fetch('./example.bt');
 	const text = await response.text();
   /* INPUT (custom DSL syntax highlighting placeholder) */
   inputEditor = monaco.editor.create(document.getElementById("input"), {
@@ -430,8 +347,18 @@ require(["vs/editor/editor.main"], async function () {
     automaticLayout: true
   });
 
+	const response1 = await fetch('./defaultRenderer.js');
+	const text1 = await response1.text();
+  /* RENDERER */
+  rendererEditor = monaco.editor.create(document.getElementById("renderer"), {
+    value: text1.trim(),
+    language: "javascript",
+    theme: "vs-dark",
+    automaticLayout: true
+  });
 
   inputEditor.onDidChangeModelContent(render);
+  rendererEditor.onDidChangeModelContent(render);
 
   render();
 
@@ -502,16 +429,26 @@ const ast = document.getElementById("ast");
 const preview = document.getElementById("preview");
 
 function render() {
-  if (!inputEditor) return;
+  if (!inputEditor || !rendererEditor) return;
 
   try {
     const text = inputEditor.getValue();
     const tree = parse(text);
 
+    ast.textContent = JSON.stringify(serialize(tree), null, 2);
 
 
     renderGraph();
 
+    const html = toHtml(text);
+
+    preview.srcdoc = `
+<html>
+<body style="font-family:sans-serif;padding:20px;">
+${html}
+</body>
+</html>
+`;
   } catch (e) {
     ast.textContent = "ERROR:\n\n" + e.message;
   }
@@ -593,7 +530,7 @@ function escapeHtml(str) {
 
 
 function renderGraph() {
-    if (!inputEditor ) return;
+    if (!inputEditor || !rendererEditor) return;
 
 
   const container = document.getElementById("graph");

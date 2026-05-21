@@ -1,0 +1,23 @@
+#{
+	#1{
+		Hello!
+		#2{
+			World!
+			#3{
+				Three!
+			}
+		}
+	}
+
+	#title{This is the title!}
+
+	Lorem ipsum.
+
+	``
+	func main() {
+		fmt.Println("Hello")
+	}
+	``
+
+	Some `code` node.
+}
