@@ -120,6 +120,19 @@ Making this kind of hacking easy is what this notation is invented for.
 - [todot](https://github.com/PratikDeoghare/brashtag-apps/tree/master/cmd/todot) - outputs brashtag tree in dot format from a brashtag document.
 - [notebook](https://github.com/PratikDeoghare/brashtag/tree/master/cmd/notebook) - use a brashtag document as a jupyter notebook
 
+#### Install 
+
+Golang:
+
+```
+import "github.com/pratikdeoghare/brashtag"
+```
+
+Python:
+
+```
+pip install git+https://github.com/PratikDeoghare/brashtag.git
+```
 
 #### TODO
 - Write tests. 
