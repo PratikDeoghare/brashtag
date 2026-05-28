@@ -134,8 +134,13 @@ Python:
 pip install git+https://github.com/PratikDeoghare/brashtag.git
 ```
 
+Javascript:
+```
+npm install git+https://github.com/pratikdeoghare/brashtag.git
+```
+
 #### TODO
-- Write tests. 
-- Better error reporting. 
-- Write tutorial. 
+- Write tests.
+- Better error reporting.
+- Write tutorial.
 - Write docs.
