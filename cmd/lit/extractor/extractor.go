@@ -84,7 +84,7 @@ func stripMargin(s string) string {
 	lines := strings.Split(s, "\n")
 	i := 0
 	if len(lines) >= 2 {
-		for i < len(lines[1]) && lines[1][i] == ' ' {
+		for i < len(lines[1]) && (lines[1][i] == ' ' || lines[1][i] == '\t') {
 			i++
 		}
 	} else {
